@@ -6,7 +6,7 @@ simpleAjaxTable.flushPagination = function(limit, page, count) {
   var html = ""
 
   if(page_max <= 4) {
-    html += '<li class="page-item page-prev"><a class="page-link" href="#"><i class="fa fa-angle-left"></i></a></li>'
+    html += '<li class="page-item page-prev"><a class="page-link" href="javascript:void(0)"><i class="fa fa-angle-left"></i></a></li>'
     for(var i = 1; i < page; ++i) {
       html += '<li class="page-item"><a class="page-link" href="javascript:void(0)">' + i + '</a></li>'
     }
@@ -14,9 +14,9 @@ simpleAjaxTable.flushPagination = function(limit, page, count) {
     for(var i = page + 1; i <= page_max; ++i) {
       html += '<li class="page-item"><a class="page-link" href="javascript:void(0)">' + i + '</a></li>'
     }
-    html += '<li class="page-item page-next"><a class="page-link" href="#"><i class="fa fa-angle-right"></i></a></li>'
+    html += '<li class="page-item page-next"><a class="page-link" href="javascript:void(0)"><i class="fa fa-angle-right"></i></a></li>'
   } else {
-    html += '<li class="page-item page-prev"><a class="page-link" href="#"><i class="fa fa-angle-left"></i></a></li>'
+    html += '<li class="page-item page-prev"><a class="page-link" href="javascript:void(0)"><i class="fa fa-angle-left"></i></a></li>'
     if(page == 1) {
       html += '<li class="page-item active"><a class="page-link" href="javascript:void(0)">' + page + '</a></li>'
       for(var i = page + 1; i <= 3; ++i) {
@@ -42,7 +42,7 @@ simpleAjaxTable.flushPagination = function(limit, page, count) {
       html += '<li class="page-item disabled"><a class="page-link" href="javascript:void(0)">' + '…' + '</a></li>'
       html += '<li class="page-item"><a class="page-link" href="javascript:void(0)">' + page_max + '</a></li>'
     }
-    html += '<li class="page-item page-next"><a class="page-link" href="#"><i class="fa fa-angle-right"></i></a></li>'
+    html += '<li class="page-item page-next"><a class="page-link" href="javascript:void(0)"><i class="fa fa-angle-right"></i></a></li>'
   }
 
   var pg = $("."+this.tablePaginationClass)
@@ -79,7 +79,20 @@ simpleAjaxTable.flushTable = function() {
   var search = this.search != null ? this.search : ""
   var filterData = this.filterData != null ? this.filterData : {}
 
-  var request = this.requestGenerator(limit, page, filterData, search, [])
+  var ordering = []
+  for(var i in this.column) {
+    if(this.column[i].sort) {
+      var info = ""
+      if(this.column[i].ordering < 0) {
+        info += "-"
+      } else if(this.column[i].ordering == 0) {
+        continue
+      }
+      info += this.column[i].name
+      ordering.push(info)
+    }
+  }
+  var request = this.requestGenerator(limit, page, filterData, search, ordering)
 
   var SAT = this
 
@@ -94,9 +107,35 @@ simpleAjaxTable.flushTable = function() {
       for(var i in column) {
         var c = column[i]
         var caption = c.caption
-        html += '<th>'+caption+'</th>'
+        if(c.sort) {
+          if(c.ordering == 1) {
+            html += '<th nowrap>'+caption+' <a cname="'+c.name+'" class="'+simpleAjaxTable.orderingBtn+'" href="javascript:void(0)"><i class="fa fa-angle-up"></i></a></th>'
+          } else if(c.ordering == -1) {
+            html += '<th nowrap>'+caption+' <a cname="'+c.name+'" class="'+simpleAjaxTable.orderingBtn+'" href="javascript:void(0)"><i class="fa fa-angle-down"></i></a></th>'
+          } else {
+            html += '<th nowrap>'+caption+' <a cname="'+c.name+'" class="'+simpleAjaxTable.orderingBtn+'" href="javascript:void(0)"><i class="fa fa-circle-thin"></i></a></th>'
+          }
+        } else {
+          html += '<th nowrap>'+caption+'</th>'
+        }
       }
       $('#'+simpleAjaxTable.tableHeadTr).empty().append(html)
+
+      $("."+simpleAjaxTable.orderingBtn).click(function() {
+        var cname = $(this).attr("cname")
+        for(var i in column) {
+          if(column[i].name == cname) {
+            var o = column[i].ordering
+            o += 1
+            if(o > 1) {
+              o = -1
+            }
+            column[i].ordering = o
+            simpleAjaxTable.flushTable()
+            return
+          }
+        }
+      })
 
       var tbody = $("#"+simpleAjaxTable.tableBody)
       var generatedData = simpleAjaxTable.dataGenerator(ret)
@@ -148,6 +187,7 @@ simpleAjaxTable.init = function(table_info) {
   this.tablePaginationClass = this.tableID + "PC"
   this.tableHeadTr = this.tableID + "THTR"
   this.tableBody = this.tableID + "TB"
+  this.orderingBtn = this.tableID + "OBTN"
 
 $('#' + this.id).append(
 '<div class="container">\

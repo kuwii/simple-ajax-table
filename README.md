@@ -1,6 +1,6 @@
 # Simple AJAX Table
 
-简（~~陋~~）单的AJAX表格，支持简单的搜索、筛选、分页功能。（排序功能正在添加……）
+简（~~陋~~）单的AJAX表格，支持简单的搜索、筛选、分页、排序功能。
 
 # 依赖
 
@@ -38,13 +38,13 @@ simpleAjaxTable.init(tableInfo)
 
     类型：String
 
-    需要生成表格的div标签的id
+    需要生成表格的div标签的id。
 
 * title
 
     类型：String
 
-    表格的标题
+    表格的标题。
 
 * column
 
@@ -54,9 +54,37 @@ simpleAjaxTable.init(tableInfo)
 
     列的参数有：
 
-    * name：列的名字，将获得的数据填入表格时将使用此名称识别数据应当填入哪一列
+    * name：
+    
+        类型：String
 
-    * caption：显示在表头上的列的名字
+        列的名字，将获得的数据填入表格时将使用此名称识别数据应当填入哪一列。
+
+    * caption：
+
+        类型：String
+    
+        显示在表头上的列的名字。
+
+    * sort：
+        
+        类型：Boolean
+
+        该列是否支持排序。
+
+        表格生成后，可点击表头各列右方的按钮切换排序方式。目前，排序仅支持按照列从左到右的优先度按照指定的方式进行排序。
+
+    * ordering：
+    
+        类型：数字
+        
+        如果该列支持排序，则需要设定默认排序的方式：
+
+        * -1：降序
+
+        * 0：不排序
+
+        * 1：升序
 
     * type：可选，如果需要对列的数据进行处理，可添加此参数，目前支持的类型：
 
@@ -122,7 +150,7 @@ simpleAjaxTable.init(tableInfo)
 
             类型：Array
 
-            空数组，目前暂不需要，留作之后排序用……
+            其中元素为字符串，为需要排序的列的name。Simple AJAX Table给出的ordering数组按照从左至右的排序优先度从高到低的顺序给出，然而，你完全可以自由处理这些数据。
     
     * 返回值：
 
@@ -185,11 +213,11 @@ simpleAjaxTable.init({
   id: "problem",
   title: "题目列表",
   column: [
-    { name: "id", caption: "ID" },
-    { name: "title", caption: "标题" },
-    { name: "introduction", caption: "简介" },
-    { name: "create_time", caption: "创建时间", type: "datetime" },
-    { name: "update_time", caption: "更新时间", type: "datetime" }
+    { name: "id", caption: "ID", sort: true, ordering: 1 },
+    { name: "title", caption: "标题", sort: true, ordering: 0 },
+    { name: "introduction", caption: "简介", sort: true, ordering: 0 },
+    { name: "create_time", caption: "创建时间", type: "datetime", sort: true, ordering: 0 },
+    { name: "update_time", caption: "更新时间", type: "datetime", sort: true, ordering: 0 }
   ],
   filter: [
     { name: "creator", type: "text", placeholder: "用户名", caption: "创建者" },
@@ -205,6 +233,17 @@ simpleAjaxTable.init({
     for(var i in filter) {
       requestData[i] = filter[i]
     }
+    var o = ""
+    var first = true
+    for(var i in ordering) {
+      if(first) {
+        first = false
+      } else {
+        o += ','
+      }
+      o += ordering[i]
+    }
+    requestData.ordering = o
 
     return {
       type: "get",
