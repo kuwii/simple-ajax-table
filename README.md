@@ -1,6 +1,8 @@
 # Simple AJAX Table
 
-简（~~陋~~）单的AJAX表格，支持简单的搜索、筛选、分页、排序功能。
+简（~~陋~~）单的AJAX表格，支持简单的搜索、筛选、分页功能，并可添加链接到创建页面的创建按钮。
+
+现已将原来辣眼睛的代码重构，现版本改动较大，说明持续更新中。
 
 # 依赖
 
@@ -14,6 +16,12 @@
 
 # 使用
 
+## 引用文件
+
+引用目录中“sat.core.js”文件即可。
+
+另外，sat.drf.js提供了适配Django REST Framework后台的适配器，默认提供了requestGenerator和datdataGenerator方法。如果需要使用，请在“sat.core.js”之后引用。
+
 ## 生成表格
 
 在引用simpleAjaxTable.js后，在需要引入表格的地方添加div标签：
@@ -25,7 +33,7 @@
 在JavaScript脚本中执行：
 
 ```
-simpleAjaxTable.init(tableInfo)
+SATable.init(tableInfo)
 ```
 
 其中tableInfo为包含表格参数的键值对集合。
@@ -46,7 +54,21 @@ simpleAjaxTable.init(tableInfo)
 
     表格的标题。
 
-* column
+* search
+
+    类型：Boolean
+
+    表格是否支持搜索，如为真，则表格将显示搜索框。
+
+    **可选**，目前搜索仅支持单一搜索框。
+
+* createURL
+
+    类型：String
+
+    **可选**，如设置此项，则表格将显示创建按钮，点击后将跳转至字符串中设定的URL地址。
+
+* columns
 
     类型：Array
 
@@ -54,43 +76,56 @@ simpleAjaxTable.init(tableInfo)
 
     列的参数有：
 
-    * name：
-    
-        类型：String
-
-        列的名字，将获得的数据填入表格时将使用此名称识别数据应当填入哪一列。
-
-    * caption：
+    * name
 
         类型：String
     
+        列的名字，将获得的数据填入表格时将使用此名称识别数据所属于的列。
+
+    * caption
+    
+        类型：String
+
         显示在表头上的列的名字。
 
-    * sort：
-        
-        类型：Boolean
-
-        该列是否支持排序。
-
-        表格生成后，可点击表头各列右方的按钮切换排序方式。目前，排序仅支持按照列从左到右的优先度按照指定的方式进行排序。
-
-    * ordering：
+    * type
     
-        类型：数字
+        类型：String
         
-        如果该列支持排序，则需要设定默认排序的方式：
+        此列的数据为何等类型的数据，可选项为：
 
-        * -1：降序
+            * Datetime：数据为日期时间，数据填入表格时将自动转换为本地时间格式。
 
-        * 0：不排序
+            * Boolean：数据为布尔值，数据填入表格时将自动转换为“√”或“×”。
 
-        * 1：升序
+            * Text：数据为文本，数据填入表格时将不加处理直接填入文本。
 
-    * type：可选，如果需要对列的数据进行处理，可添加此参数，目前支持的类型：
+            * Link：数据为超链接，点击后能够跳转到详情页面，此类型数据需要给出附加信息，见typeInfo项。
+    
+    * typeInfo
 
-        * "datetime"：将数据中的时间转换为本地时间格式
+        类型：键值对集合
 
-* filter
+        对于某些特殊类型的数据，需要给出附加信息以便数据填入表格时能够按预期形式填入。
+
+        * Link类型的数据
+
+            对于Link类型的数据，目前支持以“基地址/主键/”的形式指定超链接。
+
+            * base_url
+
+                类型：String
+
+                基地址。
+            
+            * key
+
+                类型：String
+
+                主键来源于哪一列的数据，需要是columns中某一列的name值。
+
+
+* filters
 
     类型：Array
 
@@ -98,63 +133,73 @@ simpleAjaxTable.init(tableInfo)
 
     目前筛选的表单仅支持input标签，参数基本为对input标签的设置。
 
-    * name：即input的name参数，用于生成请求时使用的也是此名
+        * name：即input的name参数，用于生成请求时使用的也是此名
 
-    * type：即input的type参数
+        * type：即input的type参数
 
-    * placeholder：即input的placeholder参数
+        * placeholder：即input的placeholder参数
 
-    * caption：显示在输入框左侧标签的参数
+        * caption：显示在输入框左侧标签的参数
 
 * requestGenerator
 
     类型：Function
     
     目前，Simple AJAX Table不能自动生成完整的AJAX请求，使用时需要给出处理的函数，以生成AJAX请求所需的部分参数。
+    
+    （对于Django REST Framework搭建的后台API，目前以提供适配器提供requestGenerator方法。）
 
     requestGenerator为生成请求各参数的函数，格式如下：
 
     ```
-    function(limit, page, filter, search, ordering)
+    function(requestData) {
+      // TO DO ...
+    }
     ```
 
     * 输入：
 
-        * limit：
-
-            类型：数字
-
-            每页显示的结果数量
-
-        * page：
-
-            类型：数字
-
-            显示第几页的结果
-
-        * filter：
+        * requestData
 
             类型：键值对集合
 
-            筛选信息，为包含筛选信息的键值对，其中键为表格参数filter中的name，值为该筛选项的值
+            请求的具体内容，包含如下键值对：
 
-        * search：
+            * filters
 
-            类型：String
+                类型：键值对集合
 
-            目前仅支持搜索单一项
+                需要筛选的信息。
+                
+                键为需要筛选的字段名，是columns中需要过滤的列的name值。
+                
+                值为筛选值，应只显示指定字段为筛选值的结果。
+            
+            * search
 
-            此参数为字符串，为搜索的信息
+                类型：String
 
-        * ordering：
+                要搜索的内容。
 
-            类型：Array
+            * ordering
 
-            其中元素为字符串，为需要排序的列的name。Simple AJAX Table给出的ordering数组按照从左至右的排序优先度从高到低的顺序给出，然而，你完全可以自由处理这些数据。
-    
+                类型：Array
+
+                要排序的字段，按表格从左到右的顺序给出。
+
+                Array内部均为String类型对象，为columns中需要排序的列的name值，如果是正序直接给出，如果为倒序，则前面会加上‘-’符号。例如，“ID”需要正序则为“ID”，倒序则为“-ID”。
+            
+            * limit
+
+                每页显示多少行数据。
+
+            * page
+
+                显示第几页数据。
+                
     * 返回值：
 
-        函数的返回值应为配置AJAX请求的键值对集合，和jQuery的ajax方法同名的参数相同，如下：
+        函数的返回值应为配置AJAX请求的键值对集合，和jQuery的ajax方法同名的参数相同，需要且只需要提供：
 
         * type：请求的类型
 
@@ -178,7 +223,7 @@ simpleAjaxTable.init(tableInfo)
 
     * 输入：
 
-        * ret：AJAX请求返回的数据的js对象
+        * ret：AJAX请求从服务器返回的数据。
 
     * 返回值：
 
@@ -190,15 +235,19 @@ simpleAjaxTable.init(tableInfo)
             
             结果的数量（可选）
 
-        * results
+        * data
 
             类型：Array
 
-            表格数据，数组中元素为包含表格一行信息的键值对集合，键为表格参数column中列参数的name，值即为此行此列的值。
+            表格数据，数组中每一个对象都是包含表格一行信息的键值对集合，键为表格参数column中列参数的name，值即为此行此列的值。
+
+            数组中数据将从前之后在表格中从上至下填入。
 
 # 举个栗子
 
 这是一个获得题目列表的例子，通过Simple AJAX Table请求[Django REST Framework](http://www.django-rest-framework.org)搭建的某后台并将结果显示到表格中。
+
+这里仅为示意，故省去了requestGenerator，dataGenerator的具体实现，详细可参见sat.drf.js中的实现。
 
 ## HTML
 
@@ -206,59 +255,57 @@ simpleAjaxTable.init(tableInfo)
 <div id="problem"></div>
 ```
 
-## JavaScript
+## JavaScript（使用sat.core.js）
 
 ```
-simpleAjaxTable.init({
-  id: "problem",
-  title: "题目列表",
-  column: [
-    { name: "id", caption: "ID", sort: true, ordering: 1 },
-    { name: "title", caption: "标题", sort: true, ordering: 0 },
-    { name: "introduction", caption: "简介", sort: true, ordering: 0 },
-    { name: "create_time", caption: "创建时间", type: "datetime", sort: true, ordering: 0 },
-    { name: "update_time", caption: "更新时间", type: "datetime", sort: true, ordering: 0 }
+SATable.DRFTable({
+  id: 'problem',
+  title: '题目',
+  search: true,
+  filters: [
+    { name: 'creator', type: 'text', placeholder: '请输入创建者用户名', caption: '创建者' },
+    { name: 'updater', type: 'text', placeholder: '请输入更新者用户名', caption: '更新者' }
   ],
-  filter: [
-    { name: "creator", type: "text", placeholder: "用户名", caption: "创建者" },
-    { name: "updater", type: "text", placeholder: "用户名", caption: "更新者" }
+  columns: [
+    { name: 'id', caption: 'ID', sort: true, ordering: 1, type: 'Link', typeInfo: { base_url: '/home/', key: 'id' } },
+    { name: 'title', caption: '标题', sort: true, type: 'Link', typeInfo: { base_url: '/home/', key: 'id' } },
+    { name: 'available', caption: '对外可用', type: 'Boolean' },
+    { name: 'create_time', caption: '创建时间', sort: true, type: 'Datetime' },
+    { name: 'update_time', caption: '更新时间', sort: true, type: 'Datetime' },
   ],
-  requestGenerator: function(limit, page, filter, search, ordering) {
-    var url = "/problems/"
-    var requestData = {
-      search: search,
-      limit: limit,
-      offset: (page - 1) * limit
-    }
-    for(var i in filter) {
-      requestData[i] = filter[i]
-    }
-    var o = ""
-    var first = true
-    for(var i in ordering) {
-      if(first) {
-        first = false
-      } else {
-        o += ','
-      }
-      o += ordering[i]
-    }
-    requestData.ordering = o
-
-    return {
-      type: "get",
-      url: url,
-      dataType: "json",
-      data: requestData
-    }
+  createURL: '/',
+  requestGenerator: function(request) {
+    // SOME CODE ...
   },
-  dataGenerator: function(ret) {
-    results = ret.results
-
-    return {
-      count: ret.count,
-      results: ret.results
-    }
+  dataGenerator: function(data) {
+    // SOME CODE ...
   }
+})
+```
+
+## JavaScript（使用sat.drf.js）
+
+因为提供了默认的requestGenerator和dataGenerator方法，故无需自行实现方法。
+
+但由于requestGenerator并不知道表格的URL，因此在原表格基础上需要给出请求的URL，参见下面的例子。
+
+```
+SATable.DRFTable({
+  id: 'envs',
+  title: '题目',
+  url: '/problems/',
+  search: true,
+  filters: [
+    { name: 'creator', type: 'text', placeholder: '请输入创建者用户名', caption: '创建者' },
+    { name: 'updater', type: 'text', placeholder: '请输入更新者用户名', caption: '更新者' }
+  ],
+  columns: [
+    { name: 'id', caption: 'ID', sort: true, ordering: 1, type: 'Link', typeInfo: { base_url: '/home/', key: 'id' } },
+    { name: 'title', caption: '标题', sort: true, type: 'Link', typeInfo: { base_url: '/home/', key: 'id' } },
+    { name: 'available', caption: '对外可用', type: 'Boolean' },
+    { name: 'create_time', caption: '创建时间', sort: true, type: 'Datetime' },
+    { name: 'update_time', caption: '更新时间', sort: true, type: 'Datetime' },
+  ],
+  createURL: '/'
 })
 ```
