@@ -33,7 +33,7 @@
 在JavaScript脚本中执行：
 
 ```
-SATable.init(tableInfo)
+SATable.SimpleAjaxForm(tableInfo)
 ```
 
 其中tableInfo为包含表格参数的键值对集合。
@@ -94,13 +94,13 @@ SATable.init(tableInfo)
         
         此列的数据为何等类型的数据，可选项为：
 
-            * Datetime：数据为日期时间，数据填入表格时将自动转换为本地时间格式。
+        * Datetime：数据为日期时间，数据填入表格时将自动转换为本地时间格式。
 
-            * Boolean：数据为布尔值，数据填入表格时将自动转换为“√”或“×”。
+        * Boolean：数据为布尔值，数据填入表格时将自动转换为“√”或“×”。
 
-            * Text：数据为文本，数据填入表格时将不加处理直接填入文本。
+        * Text：数据为文本，数据填入表格时将不加处理直接填入文本。
 
-            * Link：数据为超链接，点击后能够跳转到详情页面，此类型数据需要给出附加信息，见typeInfo项。
+        * Link：数据为超链接，点击后能够跳转到详情页面，此类型数据需要给出附加信息，见typeInfo项。
     
     * typeInfo
 
@@ -133,13 +133,13 @@ SATable.init(tableInfo)
 
     目前筛选的表单仅支持input标签，参数基本为对input标签的设置。
 
-        * name：即input的name参数，用于生成请求时使用的也是此名
+    * name：即input的name参数，用于生成请求时使用的也是此名
 
-        * type：即input的type参数
+    * type：即input的type参数
 
-        * placeholder：即input的placeholder参数
+    * placeholder：即input的placeholder参数
 
-        * caption：显示在输入框左侧标签的参数
+    * caption：显示在输入框左侧标签的参数
 
 * requestGenerator
 
@@ -258,7 +258,7 @@ SATable.init(tableInfo)
 ## JavaScript（使用sat.core.js）
 
 ```
-SATable.DRFTable({
+SATable.SimpleAjaxForm({
   id: 'problem',
   title: '题目',
   search: true,
