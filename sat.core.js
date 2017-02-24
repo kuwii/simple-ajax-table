@@ -381,7 +381,7 @@ SATable.createHead = function() {
     self.dom.filter.button = btnFilter
   }
   if (self.createURL != null) {
-    var btnCreate = getDom.AButton('创建', 'javascript:void(0);')
+    var btnCreate = getDom.AButton('创建', self.createURL)
     $(divBtn).append(btnCreate)
   }
   $(divBetween).append(divTitle).append(divBtn)
