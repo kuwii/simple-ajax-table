@@ -2,7 +2,7 @@
 
 简（~~陋~~）单的AJAX表格，支持简单的搜索、筛选、分页功能，并可添加链接到创建页面的创建按钮。
 
-现已将原来辣眼睛的代码重构，现版本改动较大，说明持续更新中。
+新加入创建表单和详情表单的自动生成功能，说明编写中……
 
 # 依赖
 
@@ -18,9 +18,15 @@
 
 ## 引用文件
 
-引用目录中“sat.core.js”文件即可。
+必须引用的是目录中的“sat.core.js”文件，包含了Simple AJAX Table表格的全部功能。
 
-另外，sat.drf.js提供了适配Django REST Framework后台的适配器，默认提供了requestGenerator和datdataGenerator方法。如果需要使用，请在“sat.core.js”之后引用。
+以下文件是对核心功能的扩展，根据需要自行引用：
+
+* “sat.create.js”扩展了自动生成表单的功能，如果需要，在“sat.core.js”文件之后引用。
+
+* “sat.update.js”扩展了自动生成详情页面及表单的功能，如果需要，在“sat.core.js”文件之后引用。
+
+* “sat.drf.js”提供了适配Django REST Framework后台的适配器，默认提供了一些核心及扩展功能所需手动提供的方法，如果需要，在最后引用。
 
 ## 生成表格
 
