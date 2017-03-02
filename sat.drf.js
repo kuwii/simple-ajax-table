@@ -1,13 +1,13 @@
-var DRFTable = {}
+SATable.DRF = {}
 
-DRFTable.dataGenerator = function(data) {
+SATable.DRF.dataGenerator = function(data) {
   return {
     count: data.count,
     data: data.results
   }
 }
 
-DRFTable.requestGenerator = function(request) {
+SATable.DRF.requestGenerator = function(request) {
   var data = {}
 
   // 筛选项
@@ -54,7 +54,14 @@ DRFTable.requestGenerator = function(request) {
 
 SATable.DRFTable = function(tableInfo) {
   tableInfo.extraData = { url: tableInfo.url }
-  tableInfo.requestGenerator = DRFTable.requestGenerator
-  tableInfo.dataGenerator = DRFTable.dataGenerator
+  tableInfo.requestGenerator = SATable.DRF.requestGenerator
+  tableInfo.dataGenerator = SATable.DRF.dataGenerator
   saTable = SATable.SimpleAjaxTable(tableInfo)
+}
+
+SATable.DRF.keepRequest = function(saForm, selectDom, item, ret) {
+  if (ret.next != null) {
+    item.ajaxInfo.url = ret.next
+    saForm.requestSelectData(saForm, selectDom, item)
+  }
 }

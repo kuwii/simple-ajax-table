@@ -3,10 +3,20 @@ var SATable = {}
 SATable.getFormData = function(form) {
   var array = $(form).serializeArray()
   var data = {}
-  for(var i in array) {
+  for (var i in array) {
     var it = array[i]
-    data[it.name] = it.value
+    if (data[it.name]) {
+      if (!(data[it.name] instanceof Array)) {
+        var oldValue = data[it.name]
+        data[it.name] = []
+        data[it.name].push(oldValue)
+      }
+      data[it.name].push(it.value)
+    } else {
+      data[it.name] = it.value
+    }
   }
+
   return data
 }
 
@@ -27,6 +37,13 @@ SATable.getDom.Div = function(class_) {
 }
 SATable.getDom.Container = function(class_) {
   classes = 'container'
+  if (class_) {
+    classes += ' ' + class_
+  }
+  return SATable.getDom.Div(classes)
+}
+SATable.getDom.Row = function(class_) {
+  classes = 'row'
   if (class_) {
     classes += ' ' + class_
   }
@@ -129,6 +146,16 @@ SATable.getDom.Span = function(class_) {
     $(span).addClass(class_)
   }
   return span
+}
+SATable.getDom.Label = function(text, class_) {
+  var label = $('<label></label>')
+  if (text) {
+    $(label).text(text)
+  }
+  if (class_) {
+    $(label).addClass(class_)
+  }
+  return label
 }
 SATable.getDom.Input = function(name, placeholder, class_) {
   var input = $('<input type="text" class="form-control" name="'+name+'" placeholder="'+placeholder+'"/>')
@@ -299,6 +326,27 @@ SATable.getDom.IconYes = function(class_) {
 }
 SATable.getDom.IconNo = function(class_) {
   var icon = $('<i class="fa fa-close fa-fw"></i>')
+  if (class_) {
+    $(icon).addClass(class_)
+  }
+  return icon
+}
+SATable.getDom.IconQuestion = function(class_) {
+  var icon = $('<i class="fa fa-question fa-fw"></i>')
+  if (class_) {
+    $(icon).addClass(class_)
+  }
+  return icon
+}
+SATable.getDom.IconEdit = function(class_) {
+  var icon = $('<i class="fa fa-pencil-square-o fa-fw"></i>')
+  if (class_) {
+    $(icon).addClass(class_)
+  }
+  return icon
+}
+SATable.getDom.IconDelete = function(class_) {
+  var icon = $('<i class="fa fa-trash fa-fw"></i>')
   if (class_) {
     $(icon).addClass(class_)
   }
@@ -514,6 +562,8 @@ SATable.initTable = function() {
   $(divContainer).append(self.createHead())
   if (self.hasFilter()) {
     $(divContainer).append(getDom.Br()).append(self.createFilterForm())
+  } else {
+    $(divContainer).append(getDom.Br())
   }
   // bar up
   $(divContainer).append(self.createBarUp())
@@ -857,4 +907,6 @@ SATable.SimpleAjaxTable = function(tableInfo) {
   saTable.initData(tableInfo)
   saTable.initTable()
   saTable.update()
+
+  return saTable
 }
