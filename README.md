@@ -52,11 +52,11 @@
 
 以下文件是对核心功能的扩展，根据需要自行引用：
 
-* ```sat.create.js```扩展了自动生成创建表单的功能，如果需要，在sat.core.js文件之后引用。
+* sat.create.js扩展了自动生成创建表单的功能，如果需要，在sat.core.js文件之后引用。
 
-* ```sat.update.js```扩展了自动生成详情界面的功能，如果需要，在sat.core.js文件之后引用。
+* sat.update.js扩展了自动生成详情界面的功能，如果需要，在sat.core.js文件之后引用。
 
-* ```sat.drf.js```提供了适配Django REST Framework后台的适配器，默认提供了一些核心及扩展功能所需手动提供的方法，如果需要，请在最后引用。
+* sat.drf.js提供了适配Django REST Framework后台的适配器，默认提供了一些核心及扩展功能所需手动提供的方法，如果需要，请在最后引用。
 
 ### AJAX表格
 
