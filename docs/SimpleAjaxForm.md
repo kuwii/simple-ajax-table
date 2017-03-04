@@ -1,4 +1,4 @@
-# SimpleAjaxTable
+# SimpleAjaxForm
 
 此类提供一套简（~~陋~~）单的AJAX表单，可在需要执行创建操作的一类页面生成AJAX表单。
 
@@ -42,7 +42,7 @@ SATable.SimpleAjaxForm(formInfo)
 
     类型：String
 
-    需要生成表格的div标签的id。
+    需要生成表单的div标签的id。
 
 * method
 
