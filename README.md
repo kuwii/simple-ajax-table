@@ -6,11 +6,15 @@
 
 * 自动生成AJAX表格
 
+    ![](https://raw.githubusercontent.com/kawaiiQ/simple-ajax-table/master/docs/SimpleAjaxTable.png)
+
     * 支持筛选、搜索、排序、分页。
     
     * 根据数据类型对表格中数据进行简单处理。
 
 * 自动生成AJAX表单
+
+    ![](https://raw.githubusercontent.com/kawaiiQ/simple-ajax-table/master/docs/SimpleAjaxForm.png)
 
     * 根据不同数据类型生成不同的输入框。
 
@@ -19,6 +23,8 @@
     * 通过AJAX请求执行创建操作，成功后跳转到指定页面。
 
 * 自动生成AJAX详情界面
+
+    ![](https://raw.githubusercontent.com/kawaiiQ/simple-ajax-table/master/docs/SimpleAjaxInfo.png)
 
     * AJAX获取单条数据详情。
     
